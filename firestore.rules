@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId == request.auth.uid
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && (!('highSchool' in data) || (data.highSchool is string && data.highSchool.size() <= 100))
+        && (!('graduationYear' in data) || (data.graduationYear is string && data.graduationYear.size() <= 10))
+        && (!('targetUniv' in data) || (data.targetUniv is string && data.targetUniv.size() <= 100))
+        && (!('targetFaculty' in data) || (data.targetFaculty is string && data.targetFaculty.size() <= 100))
+        && (!('targetMajor' in data) || (data.targetMajor is string && data.targetMajor.size() <= 100))
+        && (!('ptnType' in data) || (data.ptnType in ['Universitas', 'Institut', 'Politeknik']))
+        && (!('targetScoreTKA' in data) || (data.targetScoreTKA is number && data.targetScoreTKA >= 0 && data.targetScoreTKA <= 1000))
+        && (!('targetScoreUTBK' in data) || (data.targetScoreUTBK is number && data.targetScoreUTBK >= 0 && data.targetScoreUTBK <= 1000))
+        && (!('passingGradeTKA' in data) || (data.passingGradeTKA is number && data.passingGradeTKA >= 0 && data.passingGradeTKA <= 1000))
+        && (!('passingGradeUTBK' in data) || (data.passingGradeUTBK is number && data.passingGradeUTBK >= 0 && data.passingGradeUTBK <= 1000));
+    }
+
+    function isValidTryoutRecord(data) {
+      return data.userId is string && data.userId == request.auth.uid
+        && data.id is string && data.id.size() <= 128
+        && data.subjectId in ['mat', 'ind', 'eng']
+        && data.examCategory in ['TKA', 'UTBK']
+        && data.mode in ['timed', 'practice']
+        && data.score is number && data.score >= 0 && data.score <= 1000;
+    }
+
+    // Connection testing endpoint
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // User profile document
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserProfile(request.resource.data)
+                    && request.resource.data.userId == resource.data.userId;
+      allow delete: if isOwner(userId);
+
+      // User tryout history subcollection
+      match /history/{historyId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(historyId) && isValidTryoutRecord(request.resource.data);
+        allow update: if isOwner(userId) && isValidId(historyId) && isValidTryoutRecord(request.resource.data)
+                      && request.resource.data.userId == resource.data.userId;
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

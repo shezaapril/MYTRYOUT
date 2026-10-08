@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Profil calon mahasiswa, target PTN, dan passing grade",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "ID pengguna Firebase Auth" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "highSchool": { "type": "string", "maxLength": 100 },
+        "graduationYear": { "type": "string", "maxLength": 10 },
+        "avatarUrl": { "type": "string", "maxLength": 500000 },
+        "ptnType": { "type": "string", "enum": ["Universitas", "Institut", "Politeknik"] },
+        "targetUniv": { "type": "string", "maxLength": 100 },
+        "targetFaculty": { "type": "string", "maxLength": 100 },
+        "targetMajor": { "type": "string", "maxLength": 100 },
+        "targetScoreTKA": { "type": "number" },
+        "targetScoreUTBK": { "type": "number" },
+        "passingGradeTKA": { "type": "number" },
+        "passingGradeUTBK": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "name"]
+    },
+    "TryoutRecord": {
+      "title": "TryoutRecord",
+      "description": "Catatan riwayat pengerjaan tryout resmi atau latihan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "subjectId": { "type": "string", "enum": ["mat", "ind", "eng"] },
+        "subjectName": { "type": "string", "maxLength": 100 },
+        "examCategory": { "type": "string", "enum": ["TKA", "UTBK"] },
+        "mode": { "type": "string", "enum": ["timed", "practice"] },
+        "score": { "type": "number" },
+        "category": { "type": "string", "enum": ["Baik", "Memadai", "Kurang"] },
+        "date": { "type": "string", "maxLength": 50 },
+        "timestamp": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "correctCount": { "type": "number" },
+        "partialCount": { "type": "number" },
+        "wrongCount": { "type": "number" },
+        "timeSpentSeconds": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "subjectId", "examCategory", "mode", "score"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Data profil dan preferensi pengguna"
+    },
+    "/users/{userId}/history/{historyId}": {
+      "schema": { "$ref": "#/entities/TryoutRecord" },
+      "description": "Riwayat tryout pengguna yang disinkronisasi"
+    }
+  }
+}

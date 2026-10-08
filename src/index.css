@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-yellow: #EDE986;
+  --color-brand-blue: #93ABD9;
+  --color-brand-lilac: #E7BEF8;
+  --color-brand-pink: #F2619C;
+  --color-brand-pink-dark: #d84581;
+  --color-brand-blue-dark: #748ec4;
+}
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --c-yellow: #EDE986;
+    --c-blue: #93ABD9;
+    --c-lilac: #E7BEF8;
+    --c-pink: #F2619C;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: #E7BEF8;
+    color: #F2619C;
+  }
+}
+
+/* Custom Palette Utility Classes */
+.bg-brand-pink {
+  background-color: #F2619C;
+}
+.hover\:bg-brand-pink-dark:hover {
+  background-color: #d84581;
+}
+.text-brand-pink {
+  color: #F2619C;
+}
+.border-brand-pink {
+  border-color: #F2619C;
+}
+
+.bg-brand-blue {
+  background-color: #93ABD9;
+}
+.hover\:bg-brand-blue-dark:hover {
+  background-color: #748ec4;
+}
+.text-brand-blue {
+  color: #93ABD9;
+}
+.border-brand-blue {
+  border-color: #93ABD9;
+}
+
+.bg-brand-lilac {
+  background-color: #E7BEF8;
+}
+.text-brand-lilac {
+  color: #b054d6;
+}
+.border-brand-lilac {
+  border-color: #E7BEF8;
+}
+
+.bg-brand-yellow {
+  background-color: #EDE986;
+}
+.text-brand-yellow {
+  color: #7d7715;
+}
+.border-brand-yellow {
+  border-color: #EDE986;
+}
+
+/* Gradients using the 4 palette colors */
+.bg-gradient-palette {
+  background: linear-gradient(135deg, #93ABD9 0%, #E7BEF8 50%, #F2619C 100%);
+}
+
+.bg-gradient-palette-subtle {
+  background: linear-gradient(135deg, rgba(147, 171, 217, 0.15) 0%, rgba(231, 190, 248, 0.15) 50%, rgba(242, 97, 156, 0.12) 100%);
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #44567c 0%, #F2619C 45%, #632d4b 100%);
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+}
